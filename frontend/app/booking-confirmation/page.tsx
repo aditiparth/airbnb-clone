@@ -1,7 +1,7 @@
 "use client";
 
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { getBooking } from "@/lib/api";
 
 type Booking = {
@@ -20,7 +20,7 @@ type Booking = {
   };
 };
 
-export default function BookingConfirmationPage() {
+function BookingConfirmationContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -198,5 +198,23 @@ export default function BookingConfirmationPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function BookingConfirmationPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
+          <div className="mx-auto max-w-3xl px-6 py-16">
+            <p className="text-center text-gray-500 dark:text-gray-400">
+              Loading confirmation...
+            </p>
+          </div>
+        </main>
+      }
+    >
+      <BookingConfirmationContent />
+    </Suspense>
   );
 }

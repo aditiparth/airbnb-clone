@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getListing, createBooking } from "@/lib/api";
 
@@ -13,7 +13,7 @@ type Listing = {
   price_per_night: number;
 };
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -138,7 +138,6 @@ export default function CheckoutPage() {
         </h1>
 
         <div className="mt-8 grid gap-10 md:grid-cols-2">
-
           {/* Booking details */}
           <div>
             <h2 className="text-xl font-semibold text-black dark:text-white">
@@ -188,8 +187,8 @@ export default function CheckoutPage() {
               </h2>
 
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                This is a mock checkout. No real
-                payment will be processed.
+                This is a mock checkout. No real payment
+                will be processed.
               </p>
 
               <div className="mt-4 rounded-lg bg-gray-100 p-4 text-sm text-black dark:bg-gray-900 dark:text-white">
@@ -232,18 +231,14 @@ export default function CheckoutPage() {
                 <div className="flex justify-between">
                   <span>Service fee</span>
 
-                  <span>
-                    ₹{serviceFee.toFixed(0)}
-                  </span>
+                  <span>₹{serviceFee.toFixed(0)}</span>
                 </div>
 
                 <div className="border-t border-gray-200 pt-4 dark:border-gray-800">
                   <div className="flex justify-between text-base font-semibold">
                     <span>Total</span>
 
-                    <span>
-                      ₹{total.toFixed(0)}
-                    </span>
+                    <span>₹{total.toFixed(0)}</span>
                   </div>
                 </div>
               </div>
@@ -260,19 +255,34 @@ export default function CheckoutPage() {
                 disabled={booking}
                 className="mt-6 w-full rounded-xl bg-black py-3 font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-gray-200"
               >
-                {booking
-                  ? "Confirming..."
-                  : "Confirm and pay"}
+                {booking ? "Confirming..." : "Confirm and pay"}
               </button>
 
               <p className="mt-3 text-center text-xs text-gray-500 dark:text-gray-400">
-                You won't be charged. This is a
-                mock payment.
+                You won't be charged. This is a mock payment.
               </p>
             </div>
           </div>
         </div>
       </div>
     </main>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
+          <div className="mx-auto max-w-5xl px-6 py-12">
+            <p className="text-gray-500 dark:text-gray-400">
+              Loading checkout...
+            </p>
+          </div>
+        </main>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
   );
 }
