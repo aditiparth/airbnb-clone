@@ -1,8 +1,11 @@
-from app.database import SessionLocal
+from app.database import Base, SessionLocal, engine
 from app.models import User, Listing
 
 
 def seed_database():
+    # Create all database tables if they do not exist
+    Base.metadata.create_all(bind=engine)
+
     db = SessionLocal()
 
     try:
@@ -11,7 +14,11 @@ def seed_database():
         # -------------------------
 
         # Guest
-        guest = db.query(User).filter(User.email == "guest@airbnbclone.com").first()
+        guest = (
+            db.query(User)
+            .filter(User.email == "guest@airbnbclone.com")
+            .first()
+        )
 
         if not guest:
             guest = User(
@@ -22,7 +29,11 @@ def seed_database():
             db.add(guest)
 
         # Host
-        host = db.query(User).filter(User.email == "host@airbnbclone.com").first()
+        host = (
+            db.query(User)
+            .filter(User.email == "host@airbnbclone.com")
+            .first()
+        )
 
         if not host:
             host = User(
@@ -321,6 +332,8 @@ def seed_database():
         # INSERT LISTINGS
         # -------------------------
 
+        added_count = 0
+
         for data in listings:
             existing = (
                 db.query(Listing)
@@ -351,11 +364,12 @@ def seed_database():
             )
 
             db.add(listing)
+            added_count += 1
 
         db.commit()
 
         print("Database seeded successfully!")
-        print(f"Added {len(listings)} listings.")
+        print(f"Added {added_count} new listings.")
 
     except Exception as error:
         db.rollback()
